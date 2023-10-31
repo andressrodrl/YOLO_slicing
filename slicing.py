@@ -108,7 +108,7 @@ def slice_image(image, label, out_dir, slice_w, slice_h, overlap_w, overlap_h):
                     #calculate intersection
                     intersection = intersect_xywh(label[1:],slice)
                     #normalize xywh
-                    intersection = normalize_bbox(intersection)
+                    intersection = normalize_bbox(intersection,img_w,img_h)
 
                     #TODO:  calculate intersection area, if it is too small, dont save the annotation
 

@@ -14,6 +14,7 @@ python main.py --folder_in <input folder> --folder_out <output folder>
 """
 
 def main(args):
+    print('ejecutando main')
     folder_in = args.folder_in
     folder_out = args.folder_out
     slice_w = args.w
@@ -21,12 +22,13 @@ def main(args):
     overlap_w = args.w_o
     overlap_h = args.h_o
 
-    for file in folder_in:
+
+    for file in os.listdir(folder_in):
         if file.endswith('.jpg'):
             image_path = os.path.join(folder_in,file)
             label_path = os.path.join(folder_in,file.split('.')[0]+'.txt')
-
-    slice_image(image_path, label_path, folder_out, slice_w, slice_h, overlap_w, overlap_h)
+            print(image_path, label_path, folder_out, slice_w, slice_h, overlap_w, overlap_h)
+            slice_image(image_path, label_path, folder_out, slice_w, slice_h, overlap_w, overlap_h)
 
 
 def get_args(): # define args
@@ -43,22 +45,22 @@ def get_args(): # define args
     )
     parser.add_argument(
         "--w",
-        type=str,
+        type=int,
         help="slice width",
     )
     parser.add_argument(
         "--h",
-        type=str,
+        type=int,
         help="slice height",
     )
     parser.add_argument(
         "--w_o",
-        type=str,
+        type=float,
         help="width overlap ratio",
     )
     parser.add_argument(
         "--h_o",
-        type=str,
+        type=float,
         help="height overlap ratio",
     )
     args = parser.parse_args()

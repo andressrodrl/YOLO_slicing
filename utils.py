@@ -109,6 +109,8 @@ def array_xywh_xyxy(array,image_w,image_h):
         array(np.array(n,5))
     
     """
+    if array.ndim == 1:
+        array = array.reshape(1,5)
 
     new_array = np.zeros(array.shape)
     new_array[:,0] = array[:,0]
