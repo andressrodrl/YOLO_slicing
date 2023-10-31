@@ -123,12 +123,12 @@ def array_xywh_xyxy(array,image_w,image_h):
 
 
 
-def intersect_xywh(bbox,slice_coord):
+def intersect_xyxy(bbox,slice_coord):
     """
     Calculate intersection between two boxes
 
     Returns:
-        List[int]: [x,y,w,h]
+        List[int]: [xmin,ymin,xmax,ymax]
     """
 
     x1 = max(bbox[0], slice_coord[0])
@@ -136,15 +136,40 @@ def intersect_xywh(bbox,slice_coord):
     x2 = min(bbox[2], slice_coord[2])
     y2 = min(bbox[3], slice_coord[3])
 
-    w = x2-x1
-    h = y2-y1
+    #w = x2-x1
+    #h = y2-y1
+    #x = x1 + w/2
+    #y = y1 + w/2
 
-    x = x1 + w/2
-    y = y1 + w/2
 
-
-    intersection = [x,y,w,h]
+    intersection = [x1,y1,x2,y2]
     return intersection
+
+
+def rel_coord_xywh(bbox, slice_coord):
+    """
+    Calculate relative coordinates to the slice
+
+    Args: 
+        bbox(List[int]): [xmin,ymin,xmax,ymax]
+        slice_coord(List[int]): [xmin,ymin,xmax,ymax]
+
+    Returns:
+        coord(List[float]): [x,y,w,h]
+    """
+    xmin = bbox[0]-slice_coord[0]
+    ymin = bbox[1]-slice_coord[1]
+    xmax = bbox[2]-slice_coord[0]
+    ymax = bbox[3]-slice_coord[1]
+
+    w = xmax-xmin
+    h = ymax-ymin
+    x = xmin + w/2
+    y = ymin + w/2
+
+    coord = [x,y,w,h]
+    return coord
+    
 
 
 def normalize_bbox(bbox, image_w,image_h):

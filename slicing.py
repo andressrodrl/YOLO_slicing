@@ -81,6 +81,7 @@ def slice_image(image, label, out_dir, slice_w, slice_h, overlap_w, overlap_h):
     #load labels as numpy array
     label_array = load_label(label,img_w,img_h)
     label_array_xyxy =  array_xywh_xyxy(label_array,img_w,img_h)
+    #print(f'raw: {label_array}\nxyxy: {label_array_xyxy}')
 
     #main loop, check if label is inside the slice, if it is,calculate intersection and add row to txt label
     for slice in slice_coords:
@@ -104,16 +105,22 @@ def slice_image(image, label, out_dir, slice_w, slice_h, overlap_w, overlap_h):
 
                 #check if the label is inside the box
                 if anotation_inside_slice(label[1:],slice) == True:
+                    #print(f'********\nlabel: {label[1:]}\nslice: {slice}')   #TODO: borrar esto
 
                     #calculate intersection
-                    intersection = intersect_xywh(label[1:],slice)
-                    #normalize xywh
-                    intersection = normalize_bbox(intersection,img_w,img_h)
+                    intersection = intersect_xyxy(label[1:],slice)
+
+                    #calculate relative coordinates of the intersection
+                    #print(f'interseccion: {intersection}') #TODO: borrar esto
+                    rel_bbox = rel_coord_xywh(intersection, slice)
+                    #print(f'rel: {rel_bbox}')
+                    #normalize
+                    bbox = normalize_bbox(rel_bbox,slice_w,slice_h)
 
                     #TODO:  calculate intersection area, if it is too small, dont save the annotation
 
                     #writes line
-                    f.write(f'{int(label[0])} {intersection[0]} {intersection[1]} {intersection[2]} {intersection[3]}')
+                    f.write(f'{int(label[0])} {bbox[0]} {bbox[1]} {bbox[2]} {bbox[3]}')
             f.close()
 
 

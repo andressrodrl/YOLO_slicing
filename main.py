@@ -27,7 +27,6 @@ def main(args):
         if file.endswith('.jpg'):
             image_path = os.path.join(folder_in,file)
             label_path = os.path.join(folder_in,file.split('.')[0]+'.txt')
-            print(image_path, label_path, folder_out, slice_w, slice_h, overlap_w, overlap_h)
             slice_image(image_path, label_path, folder_out, slice_w, slice_h, overlap_w, overlap_h)
 
 
