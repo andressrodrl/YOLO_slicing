@@ -77,51 +77,57 @@ def slice_image(image, label, out_dir, slice_w, slice_h, overlap_w, overlap_h):
 
     #get list of slices coordinates
     slice_coords = calculate_slices_xyxy(img_h,img_w,slice_h,slice_w,overlap_h,overlap_w)
+    print(f'número de cortes por imagen: {len(slice_coords)}')
 
     #load labels as numpy array
-    label_array = load_label(label,img_w,img_h)
-    label_array_xyxy =  array_xywh_xyxy(label_array,img_w,img_h)
+    label_array = load_label(label)
+   
     #print(f'raw: {label_array}\nxyxy: {label_array_xyxy}')
 
     #main loop, check if label is inside the slice, if it is,calculate intersection and add row to txt label
-    for slice in slice_coords:
+    if label_array is not None:
+        label_array_xyxy =  array_xywh_xyxy(label_array,img_w,img_h)
+        for slice in slice_coords:
 
-        #filename of the slice is like  image_filename_{xmin}_{ymin}_{xmax}_{ymax}
-        slice_filename = filename_without_extension + f'_{slice[0]}_{slice[1]}_{slice[2]}_{slice[3]}' 
+            #filename of the slice is like  image_filename_{xmin}_{ymin}_{xmax}_{ymax}
+            slice_filename = filename_without_extension + f'_{slice[0]}_{slice[1]}_{slice[2]}_{slice[3]}' 
 
-        #save slice:
-        img_slice = img.crop((slice[0],slice[1],slice[2],slice[3]))
-        img_slice.save(os.path.join(out_dir,slice_filename)+'.jpg')        
+            #save slice:
+            img_slice = img.crop((slice[0],slice[1],slice[2],slice[3]))
+            img_slice.save(os.path.join(out_dir,slice_filename)+'.jpg',quality=100)        
 
-        #path to save the txt file
-        txt_path = os.path.join(out_dir,slice_filename+'.txt')
+            #path to save the txt file
+            txt_path = os.path.join(out_dir,slice_filename+'.txt')
 
-        #make txt file, after we can delete empty txt
-        with open(txt_path, 'w') as f:
+            #make txt file, after we can delete empty txt
+            with open(txt_path, 'w') as f:
 
-            for label in label_array_xyxy:
-                if label is None:
-                    continue
+                for label in label_array_xyxy:
+                    if label is None:
+                        continue
 
-                #check if the label is inside the box
-                if anotation_inside_slice(label[1:],slice) == True:
-                    #print(f'********\nlabel: {label[1:]}\nslice: {slice}')   #TODO: borrar esto
+                    #check if the label is inside the box
+                    if anotation_inside_slice(label[1:],slice) == True:
+                        #print(f'********\nlabel: {label[1:]}\nslice: {slice}')   #TODO: borrar esto
 
-                    #calculate intersection
-                    intersection = intersect_xyxy(label[1:],slice)
+                        #calculate intersection
+                        intersection = intersect_xyxy(label[1:],slice)
+                        #intersection = xyxy_to_xywh(intersection)
+                        #bbox=normalize_bbox(intersection,img_w,img_h) #borrar
 
-                    #calculate relative coordinates of the intersection
-                    #print(f'interseccion: {intersection}') #TODO: borrar esto
-                    rel_bbox = rel_coord_xywh(intersection, slice)
-                    #print(f'rel: {rel_bbox}')
-                    #normalize
-                    bbox = normalize_bbox(rel_bbox,slice_w,slice_h)
+                        #calculate relative coordinates of the intersection
+                        #print(f'interseccion: {intersection}') #TODO: borrar esto
+                        rel_bbox = rel_coord_xywh(intersection, slice)
+                        #print(f'rel: {rel_bbox}')
 
-                    #TODO:  calculate intersection area, if it is too small, dont save the annotation
+                        #normalize
+                        bbox = normalize_bbox(rel_bbox,slice_w,slice_h)
 
-                    #writes line
-                    f.write(f'{int(label[0])} {bbox[0]} {bbox[1]} {bbox[2]} {bbox[3]}')
-            f.close()
+                        #TODO:  calculate intersection area, if it is too small, dont save the annotation
+
+                        #writes line
+                        f.write(f'{int(label[0])} {bbox[0]} {bbox[1]} {bbox[2]} {bbox[3]}\n')
+                f.close()
 
 
 

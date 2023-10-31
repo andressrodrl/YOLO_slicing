@@ -3,7 +3,7 @@ from slicing import *
 from utils import *
 import os
 from pathlib import Path
-
+from tqdm import tqdm
 
 
 """
@@ -23,7 +23,7 @@ def main(args):
     overlap_h = args.h_o
 
 
-    for file in os.listdir(folder_in):
+    for file in tqdm(os.listdir(folder_in)):
         if file.endswith('.jpg'):
             image_path = os.path.join(folder_in,file)
             label_path = os.path.join(folder_in,file.split('.')[0]+'.txt')

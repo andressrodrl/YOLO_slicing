@@ -44,6 +44,13 @@ def xywh_to_xyxy(coord,image_w,image_h):
     bbox = [int(xmin), int(ymin),int(xmax),int(ymax)]
     return bbox
 
+def xyxy_to_xywh(bbox):
+    w=bbox[2]-bbox[0]
+    h=bbox[3]-bbox[1]
+    x=bbox[0]+w/2
+    y=bbox[1]+h/2
+    xywh=[x,y,w,h]
+    return xywh
 
 
 def anotation_inside_slice(bbox,slice_coord):
@@ -75,7 +82,7 @@ def anotation_inside_slice(bbox,slice_coord):
         return True
     
 
-def load_label(label,image_w,image_h):
+def load_label(label):
     """
     Function for loading the labels in a numpy array. Returns none if the txt is empty
 
@@ -87,7 +94,7 @@ def load_label(label,image_w,image_h):
 
     """
     if not os.path.exists(label):
-        list_df = None
+        l = None
         print(f'ETIQUETA NO ENCONTRADA PARA {os.path.basename(label)}')
 
     else:
@@ -103,10 +110,10 @@ def array_xywh_xyxy(array,image_w,image_h):
     Transforms numpy array from xywh to xmin ymin xmax ymax
 
     Args:
-        array(np.array(n,5))
+        array(np.array(n,5)): each row is class xcenter y center w h (normalized)
 
     Returns:
-        array(np.array(n,5))
+        array(np.array(n,5)): class xmin ymin xmax ymax (not normalized)
     
     """
     if array.ndim == 1:
@@ -165,7 +172,7 @@ def rel_coord_xywh(bbox, slice_coord):
     w = xmax-xmin
     h = ymax-ymin
     x = xmin + w/2
-    y = ymin + w/2
+    y = ymin + h/2
 
     coord = [x,y,w,h]
     return coord
